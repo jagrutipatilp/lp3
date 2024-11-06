@@ -1,45 +1,54 @@
 #include<iostream>
 #include<algorithm>
-#include<vector>
 using namespace std;
 
-bool compare(pair<int,int>p1, pair<int,int>p2){
-    double v1 = p1.first/p1.second;
-    double v2 = p2.first/p2.second;
+struct Item {
+    int profit;
+    int weight;
+    double ratio;
+};
 
-    return v1>v2;
+// Comparator function to sort items by profit-to-weight ratio in descending order
+bool compare(Item a, Item b) {
+    return a.ratio > b.ratio;
 }
 
-int main(){
-    int n=0;
-    cout<<"Enter the number of items"<<endl;
-    cin>>n;
+int main() {
+    int n = 0;
+    cout << "Enter the number of items: ";
+    cin >> n;
 
-    vector<pair<int,int>> a(n);
+    int profits[n], weights[n];
+    Item items[n];
 
-    for(int i=0;i<n;i++){
-        cout<<"Enter the profit and weight of item "<<i+1<<endl;
-        cin>>a[i].first>>a[i].second;
+    for (int i = 0; i < n; i++) {
+        cout << "Enter the profit and weight of item " << i + 1 << ": ";
+        cin >> profits[i] >> weights[i];
+        
+        // Store profit, weight, and profit-to-weight ratio in the Item array
+        items[i] = {profits[i], weights[i], (double)profits[i] / weights[i]};
     }
 
-    int weight=0;
-    cout<<"Enter the capacity of knapsack"<<endl;
-    cin>>weight;
+    int capacity = 0;
+    cout << "Enter the capacity of knapsack: ";
+    cin >> capacity;
 
-    sort(a.begin(),a.end(),compare);
+    // Sort items by profit-to-weight ratio
+    sort(items, items + n, compare);
 
-    double ans=0;
-    for(int i=0;i<n;i++){
-        if(weight>=a[i].second){
-            ans+=a[i].first;
-            weight -= a[i].second;
-            continue;
+    double maxProfit = 0.0;
+    for (int i = 0; i < n; i++) {
+        if (capacity >= items[i].weight) {
+            // If we can take the whole item, add its full profit
+            maxProfit += items[i].profit;
+            capacity -= items[i].weight;
+        } else {
+            // If only part of the item can be taken, take fractionally
+            maxProfit += items[i].ratio * capacity;
+            break; // Knapsack is full, so exit
         }
-        double ratio = a[i].first/a[i].second;
-        ans += ratio*weight;
-        weight = 0;
-        break;
     }
-    cout<<"The maximum profit is"<<endl;
-    cout<<ans;
+
+    cout << "The maximum profit is: " << maxProfit << endl;
+    return 0;
 }
