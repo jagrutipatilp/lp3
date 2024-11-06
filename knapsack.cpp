@@ -52,3 +52,24 @@ int main() {
     cout << "The maximum profit is: " << maxProfit << endl;
     return 0;
 }
+
+
+
+
+
+
+
+void selectionSort(Item items[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        int maxIdx = i;
+        for (int j = i + 1; j < n; j++) {
+            if (items[j].ratio > items[maxIdx].ratio) {
+                maxIdx = j;
+            }
+        }
+        // Swap items[i] with items[maxIdx]
+        Item temp = items[i];
+        items[i] = items[maxIdx];
+        items[maxIdx] = temp;
+    }
+}
