@@ -2,79 +2,49 @@
 #include <vector>
 using namespace std;
 
-// Function to print the solution
-void printBoard(vector<vector<int>>& board, int n) {
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            cout << board[i][j] << " ";
-        }
-        cout << endl;
+// Function to check if placing a queen at (row, col) is safe
+bool isSafe(const vector<vector<int>>& board, int row, int col, int n) {
+    for (int i = 0; i < col; i++) { // Check row on the left
+        if (board[row][i] == 1) return false;
     }
-    cout << endl;
-}
-
-// Check if it's safe to place the queen at board[row][col]
-bool isSafe(vector<vector<int>>& board, int row, int col, int n) {
-    // Check this row on left side
-    for (int i = 0; i < col; i++)
-        if (board[row][i])
-            return false;
-
-    // Check upper diagonal on left side
-    for (int i = row, j = col; i >= 0 && j >= 0; i--, j--)
-        if (board[i][j])
-            return false;
-
-    // Check lower diagonal on left side
-    for (int i = row, j = col; i < n && j >= 0; i++, j--)
-        if (board[i][j])
-            return false;
-
+    for (int i = row, j = col; i >= 0 && j >= 0; i--, j--) { // Check upper diagonal
+        if (board[i][j] == 1) return false;
+    }
+    for (int i = row, j = col; i < n && j >= 0; i++, j--) { // Check lower diagonal
+        if (board[i][j] == 1) return false;
+    }
     return true;
 }
 
-// Recursive function to solve N-Queens problem using backtracking
-bool solveNQueens(vector<vector<int>>& board, int col, int n) {
-    // If all queens are placed, return true
-    if (col >= n)
-        return true;
+// Recursive function to solve N-Queens and print all solutions
+void solveNQueens(vector<vector<int>>& board, int col, int n) {
+    if (col >= n) { // All queens placed, print the solution
+        for (int i = 0; i < n; i++) { // Rows
+            for (int j = 0; j < n; j++) { // Columns
+                cout << (board[i][j] == 1 ? "Q " : ". ");
+            }
+            cout << endl;
+        }
+        cout << endl;
+        return;
+    }
 
-    // Try placing the queen in all rows in this column
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) { // Try placing queen in each row of the current column
         if (isSafe(board, i, col, n)) {
-            // Place this queen at board[i][col]
-            board[i][col] = 1;
-
-            // Recur to place rest of the queens
-            if (solveNQueens(board, col + 1, n))
-                return true;
-
-            // If placing queen in board[i][col] doesn't lead to a solution, backtrack
-            board[i][col] = 0;
+            board[i][col] = 1; // Place queen
+            solveNQueens(board, col + 1, n); // Continue to next column
+            board[i][col] = 0; // Backtrack
         }
     }
-
-    // If the queen cannot be placed in any row in this column, return false
-    return false;
 }
 
-// Driver function
 int main() {
-    int n ;
-    // Size of the chessboard
-    cout<<"Enter chess board size : ";
-    cin>>n;
+    int n;
+    cout << "Enter the size of the board: ";
+    cin >> n;
     vector<vector<int>> board(n, vector<int>(n, 0));
 
-    // Place the first queen at a predefined position (for example, row 0, column 0)
-    board[0][0] = 1;
-
-    // Solve the remaining N-Queens problem
-    if (solveNQueens(board, 1, n)) {
-        printBoard(board, n);  // Print the final solution
-    } else {
-        cout << "Solution does not exist" << endl;
-    }
+    solveNQueens(board, 0, n);
 
     return 0;
 }
